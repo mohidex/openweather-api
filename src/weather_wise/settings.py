@@ -109,3 +109,6 @@ STATIC_ROOT = '/var/www/django-static'
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+OPEN_WEATHER_API_KEY = os.getenv('OPEN_WEATHER_API_KEY', 'your-secret-api-key')
