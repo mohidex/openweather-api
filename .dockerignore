@@ -1,0 +1,6 @@
+Dockerfile
+Dockerfile.proxy
+k8s
+docker-compose.yml
+README.md
+.*
