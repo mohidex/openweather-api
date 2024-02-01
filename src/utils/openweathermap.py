@@ -56,16 +56,17 @@ class OpenWeatherAPIClient:
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(self.BASE_URL, params=params) as response:
-                    if response.status == 200:
-                        return await response.json()
-                    elif response.status == 401:
-                        raise UnauthorizedError('Please provide a valid access token')
-                    elif response.status == 404:
-                        raise NotFoundError('No report found for your queries')
-                    elif response.status == 429:
-                        raise TooManyRequestError('You are making too many requests, please try again later')
-                    else:
-                        raise UnexpectedError('Something unexpected happens, please contact the source')
+                    match response.status:
+                        case 200:
+                            return await response.json()
+                        case 401:
+                            raise UnauthorizedError('Please provide a valid access token')
+                        case 404:
+                            raise NotFoundError('No report found for your queries')
+                        case 429:
+                            raise TooManyRequestError('You are making too many requests, please try again later')
+                        case _:
+                            raise UnexpectedError('Something unexpected happens, please contact the source')
             except (asyncio.TimeoutError, aiohttp.ClientConnectionError):
                 raise UnexpectedError('Something unexpected happens, please check your network')
 
