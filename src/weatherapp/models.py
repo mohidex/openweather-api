@@ -3,11 +3,11 @@ from dataclasses import dataclass
 
 
 DIRECTIONS = {
-    (0, 360): 'North',
-    (1, 89): 'North-East',
-    (90, 179): 'South-East',
-    (180, 269): 'South',
-    (270, 359): 'North-West',
+    (0, 45): 'North',
+    (45, 135): 'East',
+    (135, 225): 'South',
+    (225, 315): 'West',
+    (315, 360): 'North',
 }
 
 
@@ -50,9 +50,8 @@ class WeatherReport:
                 wind_direction=wind_direction,
                 description=description,
             )
-        except (KeyError, IndexError, TypeError) as e:
+        except (KeyError, IndexError, TypeError, ValueError) as e:
             # Handle failures, log the error, or raise a custom exception
-            print(f'Error creating WeatherReport from JSON: {e}')
             return None
 
     @staticmethod
