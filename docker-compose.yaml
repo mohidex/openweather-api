@@ -8,17 +8,20 @@ services:
       - ./src:/app
       - ./scripts:/app/scripts
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
       - DATABASE=postgres
       - PG_USER=openweather
       - PG_PASSWORD=openweather
       - PG_DB=openweather
       - PG_HOST=db
+      - REDIS_HOST=redis
       - SECRET_KEY=django-insecure-secret-key
       - MIGRATE_ON_STARTUP=True
+      - OPEN_WEATHER_API_KEY='4defcd88c448a5c4dcf2aaea4494fee1'
     depends_on:
       - db
+      - redis
   db:
     image: postgres:15.5-alpine
     volumes:
@@ -27,6 +30,10 @@ services:
       - POSTGRES_USER=openweather
       - POSTGRES_PASSWORD=openweather
       - POSTGRES_DB=openweather
+
+  redis:
+    image: redis:7.2.4-alpine
+
 
 volumes:
   postgres_data:
