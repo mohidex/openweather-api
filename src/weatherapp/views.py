@@ -17,9 +17,9 @@ class WeatherApiView(View):
 
     wc = OpenWeatherAPIClient(api_key=settings.OPEN_WEATHER_API_KEY)
     error_messages = {
-        400: 'No city has provided.',
-        404: 'Not city found with your query.',
-        503: 'Service is unavailable for now. Please try again later.'
+        400: "Bad Request: No city provided.",
+        404: "Not Found: No city found with the provided query.",
+        503: "Service Unavailable: The service is currently unavailable. Please try again later."
     }
 
     async def _get_weather_report(self, city: str, lang: str) -> tuple[int, dict[str, Any]]:

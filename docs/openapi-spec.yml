@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: Weather API
+  version: '1.0.0'
+  description: This API delivers weather reports for any country in three languages (English, German, Bengali), sourcing data from the [Open Weather](https://openweathermap.org).
+  contact:
+    email: mohidul.cs@gmail.com
+  license:
+    name: MIT License
+    url: https://www.mit.edu/~amini/LICENSE.md
+
+paths:
+  /api/v1/weather:
+    get:
+      parameters:
+        - name: city
+          in: query
+          schema:
+            type: string
+          required: true
+        - name: Accept-Language
+          in: header
+          schema:
+            type: string
+            enum:
+              - en-us
+              - de
+              - bn
+          default: en-us
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              example:
+                status: error
+                message: "Bad Request: No city provided."
+        '404':
+          description: Service Unavailable
+          content:
+            application/json:
+              example:
+                status: error
+                message: "Not Found: No city found with the provided query."
+        '503':
+          description: Service Unavailable
+          content:
+            application/json:
+              example:
+                status: error
+                message: "Service Unavailable: The service is currently unavailable. Please try again later."
+components:
+  schemas:
+    WeatherResponse:
+      type: object
+      properties:
+        city:
+          type: string
+        temperature:
+          type: object
+          properties:
+            current:
+              type: number
+            minimum:
+              type: number
+            maximum:
+              type: number
+          required:
+            - current
+            - minimum
+            - maximum
+        humidity:
+          type: integer
+        pressure:
+          type: integer
+        wind:
+          type: object
+          properties:
+            speed:
+              type: number
+            direction:
+              type: string
+          required:
+            - speed
+            - direction
+        description:
+          type: string
+      required:
+        - city
+        - temperature
+        - humidity
+        - pressure
+        - wind
+        - description

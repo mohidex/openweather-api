@@ -29,6 +29,7 @@ RUN pip install -r requirements.txt
 
 
 COPY ./scripts /app/scripts
+COPY ./docs /app/docs
 
 COPY ./src /app/
 
@@ -41,5 +42,9 @@ RUN set -ex \
     && cd /app \
     && python manage.py collectstatic --no-input
 
+RUN adduser --system --home /var/empty --shell /bin/nologin weatherwise \
+    && addgroup --system weatherwise
+
+USER weatherwise
 
 ENTRYPOINT ["dumb-init", "/app/scripts/docker-entrypoint.sh"]
