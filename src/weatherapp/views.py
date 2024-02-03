@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from django.conf import settings
 from django.core.cache import cache
@@ -7,6 +8,8 @@ from django.http import JsonResponse
 from .models import WeatherReport
 from utils.openweathermap import OpenWeatherAPIClient
 from utils.exceptions import UnauthorizedError, UnexpectedError, TooManyRequestError, NotFoundError
+
+logger = logging.getLogger(__name__)
 
 
 class WeatherApiView(View):
@@ -47,9 +50,11 @@ class WeatherApiView(View):
             await cache.aset(cache_key_expr, cached_response)
             return 200, cached_response
 
-        except (UnauthorizedError, UnexpectedError, TooManyRequestError):
+        except (UnauthorizedError, UnexpectedError, TooManyRequestError) as e:
+            logging.error(f'Error from source: {str(e)}')
             return 503, {'status': 'error', 'message': self.error_messages[503]}
-        except NotFoundError:
+        except NotFoundError as e:
+            logging.warning(f'Not found: {str(e)}')
             return 404, {'status': 'error', 'message': self.error_messages[404]}
 
     async def get(self, request):
@@ -66,4 +71,3 @@ class WeatherApiView(View):
         # Convert the asynchronous method to a synchronous one using async_to_sync
         status, response = await self._get_weather_report(city=city, lang=lang)
         return JsonResponse(response, status=status)
-
