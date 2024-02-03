@@ -2,25 +2,7 @@ import aiohttp
 import asyncio
 from typing import Optional, Any
 
-
-class UnauthorizedError(Exception):
-    """Exception raised when the API request is unauthorized."""
-    pass
-
-
-class NotFoundError(Exception):
-    """Exception raised when the requested resource is not found."""
-    pass
-
-
-class TooManyRequestError(Exception):
-    """Exception raised when there are too many requests in a given time frame."""
-    pass
-
-
-class UnexpectedError(Exception):
-    """Exception raised when an unexpected error occurs during the API request."""
-    pass
+from .exceptions import UnauthorizedError, NotFoundError, TooManyRequestError, UnexpectedError
 
 
 class OpenWeatherAPIClient:
@@ -29,33 +11,34 @@ class OpenWeatherAPIClient:
     Attributes:
         api_key (str): The API key for accessing the OpenWeatherMap API.
         unit (str): The unit system for temperature values (default is 'metric').
-        lang (str): The language for the API response (default is 'en').
+        version (str): The API version to use (default is '2.5').
+        endpoint (str): The base endpoint URL for weather data.
     """
 
-    BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+    BASE_URL = 'https://api.openweathermap.org/data'
 
     def __init__(
             self,
             api_key: str,
-            unit: Optional[str] = None,
-            lang: Optional[str] = None
+            unit: Optional[str] = 'metric',
+            version: Optional[str] = '2.5'
     ):
         """Initialize the OpenWeatherAPIClient."""
         self.api_key = api_key
-        self.unit = unit or 'metric'
-        self.lang = lang or 'en'
+        self.unit = unit
+        self.version = version
+        self.endpoint = f'{self.BASE_URL}/{self.version}/weather'
 
     async def _make_request(self, params: dict[str: Any]) -> dict[str, Any]:
         """Make an asynchronous request to the OpenWeatherMap API."""
 
         params.update({
-            'lang': self.lang,
             'units': self.unit,
             'appid': self.api_key,
         })
         async with aiohttp.ClientSession() as session:
             try:
-                async with session.get(self.BASE_URL, params=params) as response:
+                async with session.get(self.endpoint, params=params) as response:
                     match response.status:
                         case 200:
                             return await response.json()
@@ -70,10 +53,13 @@ class OpenWeatherAPIClient:
             except (asyncio.TimeoutError, aiohttp.ClientConnectionError):
                 raise UnexpectedError('Something unexpected happens, please check your network')
 
-    async def get_weather_by_city(self, city_name: str) -> dict[str, Any]:
+    async def get_weather_by_city(self, city_name: str, lang: Optional[str] = 'en') -> dict[str, Any]:
         """Get weather data for a city by making an asynchronous API request."""
 
-        params = {'q': city_name}
+        params = {
+            'q': city_name,
+            'lang': lang
+        }
         return await self._make_request(params)
 
     async def get_weather_by_lat_lon(self, lat: float, lon: float) -> dict[str, Any]:
