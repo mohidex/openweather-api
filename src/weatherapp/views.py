@@ -73,6 +73,5 @@ class WeatherApiView(View):
             response = {'status': 'error', 'message': self.error_messages[400]}
             return JsonResponse(response, status=400)
 
-        # Convert the asynchronous method to a synchronous one using async_to_sync
         status, response = await self._get_weather_report(city=city, lang=lang)
         return JsonResponse(response, status=status)
