@@ -1,7 +1,6 @@
 from typing import Any
 from dataclasses import dataclass
 from django.utils.translation import gettext as _
-from django.utils.translation import gettext_lazy
 
 
 DIRECTIONS = {

@@ -29,13 +29,13 @@ class WeatherApiView(View):
     async def _get_weather_report(self, city: str, lang: str) -> tuple[int, dict[str, Any]]:
         """Asynchronously fetch weather information for the given city."""
 
-        cache_key_expr = f'{city}:{lang}'
+        cache_key_expr = f'{city}:{lang}'.lower()
 
         # Check if the response is cached; if so, return it from the cache
         if (response := await cache.aget(cache_key_expr)) and response:
             return 200, response
         try:
-            response = await self.wc.get_weather_by_city(city_name=city)
+            response = await self.wc.get_weather_by_city(city_name=city, lang=lang)
 
             # Process the API response and create a WeatherReport object
             wr = WeatherReport.from_openweather_response(response)
@@ -67,7 +67,7 @@ class WeatherApiView(View):
         """Handle GET requests to retrieve weather information for a given city."""
 
         city = request.GET.get('city')
-        lang = request.headers.get('Accept-Language').split('-')[0]
+        lang = request.headers.get('Accept-Language', 'en-us').split('-')[0]
 
         # Check if 'city' is not provided in the query string; return a 400 Bad Request response
         if not city:

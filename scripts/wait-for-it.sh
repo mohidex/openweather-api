@@ -11,7 +11,7 @@ echo "Waiting for $host:$port to be reachable..."
 # Loop until the port is open or the timeout is reached
 until nc -z "$host" "$port" >/dev/null 2>&1; do
     sleep 1
-    timeout=$((timeout - 1))
+    ((timeout--))
 
     if [ "$timeout" -le 0 ]; then
         echo "Timeout reached. Port $port on $host is not reachable."
