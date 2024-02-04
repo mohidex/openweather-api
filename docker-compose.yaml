@@ -8,6 +8,7 @@ services:
       - ./src:/app
       - ./scripts:/app/scripts
       - ./docs:/app/docs
+      - local_mo:/app/locale
     ports:
       - "8000:8000"
     environment:
@@ -39,3 +40,4 @@ services:
 
 volumes:
   postgres_data:
+  local_mo:

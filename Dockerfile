@@ -13,6 +13,7 @@ RUN set -ex \
         netcat-openbsd \
         libpq-dev \
         binutils \
+        gettext \
         libproj-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -41,6 +42,11 @@ RUN set -ex \
     && mkdir -p /var/www/django-static \
     && cd /app \
     && python manage.py collectstatic --no-input
+
+# Run compilation step for i18n
+RUN set -ex \
+    && python /app/manage.py compilemessages
+
 
 RUN adduser --system --home /var/empty --shell /bin/nologin weatherwise \
     && addgroup --system weatherwise

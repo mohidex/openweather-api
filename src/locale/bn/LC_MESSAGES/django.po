@@ -1,0 +1,54 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-02-04 17:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: weatherapp/models.py:8 weatherapp/models.py:12
+msgid "North"
+msgstr "উত্তর"
+
+#: weatherapp/models.py:9
+msgid "East"
+msgstr "পূর্ব"
+
+#: weatherapp/models.py:10
+msgid "South"
+msgstr "দক্ষিণ"
+
+#: weatherapp/models.py:11
+msgid "West"
+msgstr "পশ্চিম"
+
+#: weatherapp/models.py:83
+msgid "Unknown"
+msgstr "অজানা"
+
+#: weatherapp/views.py:24
+msgid "Bad Request: No city provided."
+msgstr "খারাপ অনুরোধ: কোন শহর প্রদান করা হয়েছে."
+
+#: weatherapp/views.py:25
+msgid "Not Found: No city found with the provided query."
+msgstr "পাওয়া যায়নি: প্রদত্ত প্রশ্নের সাথে কোন শহর পাওয়া যায়নি।"
+
+#: weatherapp/views.py:26
+msgid ""
+"Service Unavailable: The service is currently unavailable. Please try again "
+"later."
+msgstr ""
+"পরিষেবা অনুপলব্ধ: পরিষেবাটি বর্তমানে অনুপলব্ধ৷ অনুগ্রহ করে একটু পরে আবার চেষ্টা করুন."
