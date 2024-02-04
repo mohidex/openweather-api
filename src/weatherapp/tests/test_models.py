@@ -56,17 +56,17 @@ class TestWeatherReport(TestCase):
     def test_from_openweather_response_missing_data(self):
         # Test failure when required data is missing in the API response
         incomplete_json_data = {"coord": {"lat": 44.34}}  # Missing "name" key
-        weather_report = WeatherReport.from_openweather_response(incomplete_json_data)
-        self.assertIsNone(weather_report)
+        with self.assertRaises(ValueError):
+            WeatherReport.from_openweather_response(incomplete_json_data)
 
     def test_from_openweather_response_invalid_data(self):
         # Test failure when data types are incorrect in the API response
         invalid_json_data = {"name": "Zocca", "main": {"temp": "invalid"}}  # "temp" should be a float
-        weather_report = WeatherReport.from_openweather_response(invalid_json_data)
-        self.assertIsNone(weather_report)
+        with self.assertRaises(ValueError):
+            WeatherReport.from_openweather_response(invalid_json_data)
 
     def test_from_openweather_response_unexpected_structure(self):
         # Test failure when the API response structure is unexpected
         unexpected_json_data = {"message": "Unexpected structure"}  # Missing required keys
-        weather_report = WeatherReport.from_openweather_response(unexpected_json_data)
-        self.assertIsNone(weather_report)
+        with self.assertRaises(ValueError):
+            WeatherReport.from_openweather_response(unexpected_json_data)

@@ -9,6 +9,8 @@ DIRECTIONS = {
     (225, 315): 'West',
     (315, 360): 'North',
 }
+REQUIRED_FIELDS = ['name', 'main', 'wind']
+DICT_FIELDS = ['main', 'wind']
 
 
 @dataclass
@@ -25,34 +27,49 @@ class WeatherReport:
     description: str
 
     @classmethod
-    def from_openweather_response(cls, json_data):
+    def from_openweather_response(cls, json_data: dict[str, Any]):
         """Create a WeatherReport instance from OpenWeatherMap API response."""
 
-        try:
-            city = json_data['name']
-            temperature = float(json_data['main']['temp'])
-            min_temperature = float(json_data['main']['temp_min'])
-            max_temperature = float(json_data['main']['temp_max'])
-            humidity = int(json_data['main']['humidity'])
-            pressure = int(json_data['main']['pressure'])
-            wind_speed = float(json_data['wind']['speed'])
-            wind_direction = str(json_data['wind']['deg'])
-            description = json_data['weather'][0]['description']
+        data, is_valid = cls._validate_data(json_data)
+        if not is_valid:
+            raise ValueError('Response got from source is not valid.')
+        return cls(**data)
 
-            return cls(
-                city=city,
-                temperature=temperature,
-                min_temperature=min_temperature,
-                max_temperature=max_temperature,
-                humidity=humidity,
-                pressure=pressure,
-                wind_speed=wind_speed,
-                wind_direction=wind_direction,
-                description=description,
-            )
-        except (KeyError, IndexError, TypeError, ValueError) as e:
-            # Handle failures, log the error, or raise a custom exception
-            return None
+    def __post_init__(self):
+        """Post-initialization steps."""
+
+        self.wind_direction = self._get_cardinal_direction(int(self.wind_direction))
+
+    @staticmethod
+    def _validate_data(json_data: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+        """Validate and extract relevant data from the OpenWeatherMap API response."""
+
+        # Check if all required fields are present in json_data
+        if not all(key in json_data for key in REQUIRED_FIELDS):
+            return {}, False
+
+        # Check if 'main', 'wind', and 'weather' fields are dictionaries
+        if not all(isinstance(json_data[key], dict) for key in DICT_FIELDS):
+            return {}, False
+
+        # Extract individual dictionaries and handle potential null values
+        main_dict, wind_dict = json_data['main'], json_data['wind']
+        weathers = json_data.get('weather')
+        description_str = weathers[0].get('description') if isinstance(weathers, list) else ''
+
+        # Create a validated_data dictionary with extracted values
+        validated_data = {
+            'city': json_data['name'],
+            'temperature': main_dict.get('temp'),
+            'min_temperature': main_dict.get('temp_min'),
+            'max_temperature': main_dict.get('temp_max'),
+            'humidity': main_dict.get('humidity'),
+            'pressure': main_dict.get('pressure'),
+            'wind_speed': wind_dict.get('speed'),
+            'wind_direction': wind_dict.get('deg'),
+            'description': description_str
+        }
+        return validated_data, True
 
     @staticmethod
     def _get_cardinal_direction(degrees: int) -> str:
@@ -62,11 +79,6 @@ class WeatherReport:
             if angle_range[0] <= degrees <= angle_range[1]:
                 return direction
         return 'Unknown'
-
-    def __post_init__(self):
-        """Post-initialization steps."""
-
-        self.wind_direction = self._get_cardinal_direction(int(self.wind_direction))
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize WeatherReport object to a dictionary."""

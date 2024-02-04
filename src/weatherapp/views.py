@@ -50,9 +50,14 @@ class WeatherApiView(View):
             await cache.aset(cache_key_expr, cached_response)
             return 200, cached_response
 
+        except ValueError as e:
+            logging.error(f'Data Error: {str(e)}')
+            return 400, {'status': 'error', 'message': self.error_messages[400]}
+
         except (UnauthorizedError, UnexpectedError, TooManyRequestError) as e:
             logging.error(f'Error from source: {str(e)}')
             return 503, {'status': 'error', 'message': self.error_messages[503]}
+
         except NotFoundError as e:
             logging.warning(f'Not found: {str(e)}')
             return 404, {'status': 'error', 'message': self.error_messages[404]}
