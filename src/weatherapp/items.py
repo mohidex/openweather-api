@@ -49,14 +49,16 @@ class WeatherReport:
         if not all(key in json_data for key in REQUIRED_FIELDS):
             return {}, False
 
-        # Check if 'main', 'wind', and 'weather' fields are dictionaries
+        # Check if 'main', and 'wind' fields are dictionaries
         if not all(isinstance(json_data[key], dict) for key in DICT_FIELDS):
             return {}, False
 
         # Extract individual dictionaries and handle potential null values
         main_dict, wind_dict = json_data['main'], json_data['wind']
-        weathers = json_data.get('weather')
-        description_str = weathers[0].get('description') if isinstance(weathers, list) else ''
+
+        description = str()
+        if (weathers := json_data.get('weather')) and isinstance(weathers, list):
+            description = weathers[0].get('description', '')
 
         # Create a validated_data dictionary with extracted values
         validated_data = {
@@ -68,7 +70,7 @@ class WeatherReport:
             'pressure': main_dict.get('pressure'),
             'wind_speed': wind_dict.get('speed'),
             'wind_direction': wind_dict.get('deg'),
-            'description': description_str
+            'description': description
         }
         return validated_data, True
 
