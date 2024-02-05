@@ -1,5 +1,5 @@
 from django.test import TestCase
-from ..models import WeatherReport
+from ..items import WeatherReport
 from .example_response import SOURCE_RESPONSE
 
 

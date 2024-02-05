@@ -54,5 +54,6 @@ jobs:
           docker run --rm \
           --network ${{ job.services.postgres.network }} \
           -e PG_HOST=postgres \
+          -e REDIS_HOST=redis \
           -e SECRET_KEY=some-secret-for-test \
           openweather:test /app/manage.py test

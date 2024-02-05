@@ -3,7 +3,8 @@ from django.test import TestCase
 from django.urls import reverse
 from unittest.mock import patch
 from django.core.cache import cache
-from utils.exceptions import UnauthorizedError, NotFoundError
+from weatherapp.urls import urlpatterns
+from openweather.exceptions import UnauthorizedError, NotFoundError
 
 from asgiref.sync import async_to_sync
 from weatherapp.views import WeatherApiView
@@ -23,8 +24,9 @@ class MockWeatherViewSync(WeatherApiView):
 class WeatherApiViewTest(TestCase):
 
     def setUp(self) -> None:
-        from weatherapp.urls import urlpatterns
-        urlpatterns[0].callback = MockWeatherViewSync.as_view()
+        # Update the function for the 'weather-api' so it can use a mocked function
+        map(lambda u: setattr(u, 'callback', MockWeatherViewSync.as_view())
+            if u.name == 'weather-api' else u, urlpatterns)
         self.mock_response = SOURCE_RESPONSE
         self.url = reverse('weather-api')
         logging.disable(logging.CRITICAL)
@@ -133,6 +135,10 @@ class WeatherApiViewTest(TestCase):
 
     def tearDown(self) -> None:
         logging.disable(logging.NOTSET)
+        # Reset the view function with the accurate one
+        map(lambda u: setattr(u, 'callback', WeatherApiView.as_view())
+            if u.name == 'weather-api' else u, urlpatterns)
+
         cache.delete('testcity1:en')
         cache.delete('testcity2:en')
         cache.delete('testcity3:en')

@@ -56,17 +56,16 @@ class OpenWeatherAPIClient:
     async def get_weather_by_city(self, city_name: str, lang: Optional[str] = 'en') -> dict[str, Any]:
         """Get weather data for a city by making an asynchronous API request."""
 
-        params = {
-            'q': city_name,
-            'lang': lang
-        }
+        params = {'q': city_name, 'lang': lang}
         return await self._make_request(params)
 
     async def get_weather_by_lat_lon(self, lat: float, lon: float) -> dict[str, Any]:
         """Get weather data for a location by latitude and longitude."""
 
-        params = {
-            'lat': lat,
-            'lon': lon,
-        }
+        params = {'lat': lat, 'lon': lon}
         return await self._make_request(params)
+
+    async def get_weather(self, **kwargs) -> dict[str, Any]:
+        """Get weather data by any query parameter."""
+
+        return await self._make_request(kwargs)
