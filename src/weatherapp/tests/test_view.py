@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 from unittest.mock import patch
 from django.core.cache import cache
-from utils.exceptions import UnauthorizedError, NotFoundError
+from openweather.exceptions import UnauthorizedError, NotFoundError
 
 from asgiref.sync import async_to_sync
 from weatherapp.views import WeatherApiView

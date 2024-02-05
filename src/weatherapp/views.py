@@ -7,8 +7,8 @@ from django.http import JsonResponse
 from django.utils.translation import gettext as _
 
 from .models import WeatherReport
-from utils.openweathermap import OpenWeatherAPIClient
-from utils.exceptions import UnauthorizedError, UnexpectedError, TooManyRequestError, NotFoundError
+from openweather import OpenWeatherAPIClient
+from openweather.exceptions import UnauthorizedError, UnexpectedError, TooManyRequestError, NotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -53,15 +53,15 @@ class WeatherApiView(View):
 
         except ValueError as e:
             logging.error(f'Data Error: {str(e)}')
-            return 400, {'status': 'error', 'message': _(self.error_messages[400])}
+            return 400, {}
 
         except (UnauthorizedError, UnexpectedError, TooManyRequestError) as e:
             logging.error(f'Error from source: {str(e)}')
-            return 503, {'status': 'error', 'message': _(self.error_messages[503])}
+            return 503, {}
 
         except NotFoundError as e:
             logging.warning(f'Not found: {str(e)}')
-            return 404, {'status': 'error', 'message': _(self.error_messages[404])}
+            return 404, {}
 
     async def get(self, request):
         """Handle GET requests to retrieve weather information for a given city."""
@@ -71,8 +71,12 @@ class WeatherApiView(View):
 
         # Check if 'city' is not provided in the query string; return a 400 Bad Request response
         if not city:
-            response = {'status': 'error', 'message': _(self.error_messages[400])}
-            return JsonResponse(response, status=400)
+            err_response = {'status': 'error', 'message': _(self.error_messages[400])}
+            return JsonResponse(err_response, status=400)
 
         status, response = await self._get_weather_report(city=city, lang=lang)
-        return JsonResponse(response, status=status)
+        if status == 200:
+            return JsonResponse(response, status=status)
+
+        err_response = {'status': 'error', 'message': _(self.error_messages[status])}
+        return JsonResponse(err_response, status=status)
