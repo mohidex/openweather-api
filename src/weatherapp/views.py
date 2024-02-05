@@ -6,7 +6,7 @@ from django.views.generic import View
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 
-from .models import WeatherReport
+from .items import WeatherReport
 from openweather import OpenWeatherAPIClient
 from openweather.exceptions import UnauthorizedError, UnexpectedError, TooManyRequestError, NotFoundError
 
