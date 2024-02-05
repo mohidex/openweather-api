@@ -1,0 +1,58 @@
+name: Build and Test CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_call:
+
+jobs:
+
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15.5-alpine
+        env:
+          POSTGRES_DB: openweather
+          POSTGRES_USER: openweather
+          POSTGRES_PASSWORD: openweather
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7.2.4-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout to openweather-api
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the image
+        uses: 'docker/build-push-action@v4'
+        with:
+          context: .
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: openweather:test
+
+      - name: Run tests
+        run: |
+          docker run --rm \
+          --network ${{ job.services.postgres.network }} \
+          -e PG_HOST=postgres \
+          -e SECRET_KEY=some-secret-for-test \
+          openweather:test /app/manage.py test
