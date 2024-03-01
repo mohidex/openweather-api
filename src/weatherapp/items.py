@@ -25,7 +25,6 @@ class WeatherReport:
     pressure: int
     wind_speed: float
     wind_direction: str
-    description: str
 
     @classmethod
     def from_openweather_response(cls, json_data: dict[str, Any]):
@@ -56,10 +55,6 @@ class WeatherReport:
         # Extract individual dictionaries and handle potential null values
         main_dict, wind_dict = json_data['main'], json_data['wind']
 
-        description = str()
-        if (weathers := json_data.get('weather')) and isinstance(weathers, list):
-            description = weathers[0].get('description', '')
-
         # Create a validated_data dictionary with extracted values
         validated_data = {
             'city': json_data['name'],
@@ -70,7 +65,6 @@ class WeatherReport:
             'pressure': main_dict.get('pressure'),
             'wind_speed': wind_dict.get('speed'),
             'wind_direction': wind_dict.get('deg'),
-            'description': description
         }
         return validated_data, True
 
@@ -97,6 +91,5 @@ class WeatherReport:
             'wind': {
                 'speed': self.wind_speed,
                 'direction': _(self.wind_direction),
-            },
-            'description': self.description,
+            }
         }

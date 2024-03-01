@@ -89,12 +89,9 @@ components:
           required:
             - speed
             - direction
-        description:
-          type: string
       required:
         - city
         - temperature
         - humidity
         - pressure
         - wind
-        - description
