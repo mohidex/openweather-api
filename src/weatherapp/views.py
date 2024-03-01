@@ -6,9 +6,11 @@ from django.views.generic import View
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
 
-from .items import WeatherReport
+from .models import WeatherData
+
 from openweather import OpenWeatherAPIClient
-from openweather.exceptions import UnauthorizedError, UnexpectedError, TooManyRequestError, NotFoundError
+from openweather.items import WeatherReport
+from openweather.exceptions import UnauthorizedError, UnexpectedError, TooManyRequestError, NotFoundError, InvalidResponse
 
 logger = logging.getLogger(__name__)
 
@@ -35,11 +37,12 @@ class WeatherApiView(View):
         if (response := await cache.aget(cache_key_expr)) and response:
             return 200, response
         try:
-            response = await self.wc.get_weather_by_city(city_name=city, lang=lang)
+            wr: WeatherReport = await self.wc.get_weather_by_city(city_name=city, lang=lang)
 
             # Process the API response and create a WeatherReport object
-            wr = WeatherReport.from_openweather_response(response)
-            wr_json = wr.to_dict()
+            weather = WeatherData.from_weather_report(wr)
+            await weather.asave()
+            wr_json = weather.to_dict()
 
             # Prepare a response for caching
             cached_response = {
@@ -51,7 +54,7 @@ class WeatherApiView(View):
             await cache.aset(cache_key_expr, cached_response)
             return 200, cached_response
 
-        except ValueError as e:
+        except InvalidResponse as e:
             logging.error(f'Data Error: {str(e)}')
             return 400, {}
 
