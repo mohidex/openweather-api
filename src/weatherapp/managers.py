@@ -4,7 +4,7 @@ from asgiref.sync import sync_to_async
 
 class WeatherDataManager(models.Manager):
     def get_latest(self, city):
-        return self.filter(city=city).alatest('timestamp')
+        return self.filter(city=city).latest('timestamp')
 
     def all_by_city(self, city):
         return self.filter(city=city).order_by('-timestamp')

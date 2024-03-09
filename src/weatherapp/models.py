@@ -37,16 +37,16 @@ class WeatherData(models.Model):
         """Get cardinal direction based on degrees."""
 
         directions = {
-            (0, 45): _('North'),
-            (45, 135): _('East'),
-            (135, 225): _('South'),
-            (225, 315): _('West'),
-            (315, 360): _('North'),
+            (0, 45): 'North',
+            (45, 135): 'East',
+            (135, 225): 'South',
+            (225, 315): 'West',
+            (315, 360): 'North',
         }
         for angle_range, direction in directions.items():
             if angle_range[0] <= self.wind_degree <= angle_range[1]:
                 return direction
-        return _('Unknown')
+        return 'Unknown'
 
     def save(self, *args, **kwargs):
         self.wind_direction = self.get_wind_cardinal_direction()

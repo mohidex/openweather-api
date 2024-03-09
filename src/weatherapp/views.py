@@ -35,7 +35,6 @@ class WeatherApiView(View):
             weather_data: WeatherData = await WeatherData.objects.aget_latest(city=city_name)
         except WeatherData.DoesNotExist:
             return
-
         wr_json = weather_data.to_dict()
 
         # Cache the response for future use
