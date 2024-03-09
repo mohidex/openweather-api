@@ -16,3 +16,8 @@ class TooManyRequestError(Exception):
 class UnexpectedError(Exception):
     """Exception raised when an unexpected error occurs during the API request."""
     pass
+
+
+class InvalidResponse(Exception):
+    """Exception raised when got missing/corrupted data during successful API request."""
+    pass
