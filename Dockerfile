@@ -24,8 +24,6 @@ RUN adduser \
 RUN \
     --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
-    --mount=type=cache,target=/var/log/apt \
-    --mount=type=cache,target=/var/lib/dpkg \
     --mount=type=cache,target=/var/lib/apt/lists \
     set -ex \
     && apt-get update \
@@ -46,10 +44,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
 
-COPY ./docs /app/docs
+
 
 # Copy the application code
 COPY ./src /app/
+COPY ./docs /docs
 
 # Collect static files
 RUN set -ex \
