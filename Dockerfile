@@ -11,14 +11,8 @@ ENV AIOHTTP_NO_EXTENSIONS 1
 WORKDIR /app
 
 ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
+RUN adduser --system --uid "${UID}" --home /var/empty --shell /bin/nologin appuser \
+    && addgroup --system appuser
 
 # Runtime dependencies
 RUN \
