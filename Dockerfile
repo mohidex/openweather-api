@@ -44,11 +44,13 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
 
-
-
 # Copy the application code
 COPY ./src /app/
 COPY ./docs /docs
+
+# Copy the scripts files
+COPY ./scripts /scripts
+RUN chmod +x /scripts/wait-for-it.sh /scripts/docker-entrypoint.sh
 
 # Collect static files
 RUN set -ex \
@@ -62,5 +64,4 @@ RUN set -x \
 
 # Run the application as a non-root user
 USER appuser
-RUN --mount=type=bind,source=./scripts,target=/app/scripts \
-    dumb-init /app/scripts/docker-entrypoint.sh
+ENTRYPOINT ["dumb-init", "/scripts/docker-entrypoint.sh"]
