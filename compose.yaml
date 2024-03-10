@@ -1,14 +1,23 @@
-version: '3.8'
-
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: uvicorn weather_wise.asgi:application --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - ./src:/app
-      - ./scripts:/app/scripts
-      - ./docs:/app/docs
-      - local_mo:/app/locale
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app
+          ignore:
+            - locale/
+        - action: rebuild
+          path: requirements.txt
+        - action: rebuild
+          path: ./locale/bn/LC_MESSAGES/django.po
+        - action: rebuild
+          path: ./locale/de/LC_MESSAGES/django.po
+
     ports:
       - "8000:8000"
     environment:
@@ -33,11 +42,19 @@ services:
       - POSTGRES_USER=openweather
       - POSTGRES_PASSWORD=openweather
       - POSTGRES_DB=openweather
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openweather"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7.2.4-alpine
-
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
-  local_mo:

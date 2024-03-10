@@ -130,5 +130,7 @@ STATIC_ROOT = '/var/www/django-static'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SWEGGER_DOCS_PATH = os.path.join(BASE_DIR.parent, 'docs/openapi-spec.yml')
+
 
 OPEN_WEATHER_API_KEY = os.getenv('OPEN_WEATHER_API_KEY', 'your-secret-api-key')
