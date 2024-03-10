@@ -46,6 +46,9 @@ COPY ./docs /docs
 COPY ./scripts /scripts
 RUN chmod +x /scripts/wait-for-it.sh /scripts/docker-entrypoint.sh
 
+# Copy the locale files
+COPY ./locale /app/locale
+
 # Collect static files
 RUN set -ex \
     && mkdir -p /var/www/django-static \

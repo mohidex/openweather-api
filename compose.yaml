@@ -9,8 +9,14 @@ services:
         - action: sync
           path: ./src
           target: /app
+          ignore:
+            - locale/
         - action: rebuild
           path: requirements.txt
+        - action: rebuild
+          path: ./locale/bn/LC_MESSAGES/django.po
+        - action: rebuild
+          path: ./locale/de/LC_MESSAGES/django.po
 
     ports:
       - "8000:8000"
