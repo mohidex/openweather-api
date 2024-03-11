@@ -68,3 +68,15 @@ class WeatherData(models.Model):
                 'direction': _(self.wind_direction)
             }
         }
+
+
+class City(models.Model):
+    name = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    active = models.BooleanField(default=False)
+    last_update = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.name} - {self.country}'
