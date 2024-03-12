@@ -7,7 +7,7 @@ on:
 
   jobs:
     build-and-test:
-      uses: './.github/actions/build-and-test'
+      uses: './.github/actions/build-and-test.yml'
 
     build-and-push:
       needs: build-and-test
