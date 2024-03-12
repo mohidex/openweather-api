@@ -30,19 +30,6 @@ class OpenWeatherAPIClient:
         self.version = version
         self.endpoint = f'{self.BASE_URL}/{self.version}/weather'
 
-    @staticmethod
-    async def _raise_for_failed_requests(response: aiohttp.ClientResponse) -> Never:
-        """Raise expected error for failed api calls"""
-        match response.status:
-            case 401:
-                raise UnauthorizedError('Please provide a valid access token')
-            case 404:
-                raise NotFoundError('No report found for your queries')
-            case 429:
-                raise TooManyRequestError('You are making too many requests, please try again later')
-            case _:
-                raise UnexpectedError('Something unexpected happens, please contact the source')
-
     async def _make_request(self, params: dict[str: Any]) -> WeatherReport:
         """Make an asynchronous request to the OpenWeatherMap API."""
 
@@ -53,9 +40,18 @@ class OpenWeatherAPIClient:
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(self.endpoint, params=params) as response:
-                    if response.status == 200:
-                        response_json = await response.json()
-                        return WeatherReport.from_json_response(response_json)
+                    match response.status:
+                        case 200:
+                            response_json = await response.json()
+                            return WeatherReport.from_json_response(response_json)
+                        case 401:
+                            raise UnauthorizedError('Please provide a valid access token')
+                        case 404:
+                            raise NotFoundError('No report found for your queries')
+                        case 429:
+                            raise TooManyRequestError('You are making too many requests, please try again later')
+                        case _:
+                            raise UnexpectedError('Something unexpected happens, please contact the source')
             except (asyncio.TimeoutError, aiohttp.ClientConnectionError):
                 raise UnexpectedError('Something unexpected happens, please check your network')
 
