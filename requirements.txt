@@ -1,4 +1,4 @@
-Django==4.2
+Django==5.0.3
 uvicorn==0.28.0
 psycopg~=3.1.18
 aiohttp~=3.9.3
