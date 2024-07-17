@@ -29,6 +29,7 @@ class CityLoader:
         excel_file = await self.download_excel_file()
         workbook = load_workbook(filename=excel_file, read_only=True)
         sheet = workbook.active
+        # loop through all the rows
         for row in sheet.iter_rows(min_row=2, values_only=True):
             yield CityData(*row)
         workbook.close()
