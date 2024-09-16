@@ -1,6 +1,6 @@
 Django==5.0.3
 uvicorn==0.30.3
-psycopg~=3.1.18
+psycopg~=3.2.2
 aiohttp~=3.9.5
 ipython~=8.23.0
 django-redis~=5.4.0
