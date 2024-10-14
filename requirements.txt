@@ -1,5 +1,5 @@
 Django==5.0.3
-uvicorn==0.30.3
+uvicorn==0.31.1
 psycopg~=3.1.18
 aiohttp~=3.9.5
 ipython~=8.23.0
