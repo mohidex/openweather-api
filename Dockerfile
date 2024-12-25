@@ -43,8 +43,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 FROM base AS production
 
 COPY --from=builder --chown=app:app /app/.venv /app/.venv
-ENV VIRTUAL_ENV=/opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy the application code
 COPY ./src /app/
