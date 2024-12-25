@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 ARG PYTHON_VERSION=3.12
 
-FROM python:${PYTHON_VERSION}-slim
+FROM python:${PYTHON_VERSION}-slim AS base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -15,13 +15,9 @@ RUN adduser --system --uid "${UID}" --home /var/empty --shell /bin/nologin appus
     && addgroup --system appuser
 
 # Runtime dependencies
-RUN \
-    --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=/var/lib/apt \
+RUN --mount=type=cache,target=/var/lib/apt \
     --mount=type=cache,target=/var/lib/apt/lists \
-    set -ex \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
+    apt-get update && apt-get install -y --no-install-recommends \
         dumb-init \
         netcat-openbsd \
         libpq-dev \
@@ -33,10 +29,22 @@ RUN \
     && rm -rf /var/lib/apt/lists/*
 
 
+FROM base AS builder
+
+# Install UV
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 # Application dependencies
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project
+
+FROM base AS production
+
+COPY --from=builder --chown=app:app /app/.venv /app/.venv
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Copy the application code
 COPY ./src /app/

@@ -1,0 +1,16 @@
+[project]
+name = "openweather-api"
+version = "0.1.0"
+description = "The Weather API provides weather reports for any country in three languages: English, German, and Bengali"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp~=3.9.5",
+    "django-redis~=5.4.0",
+    "django==5.0.3",
+    "ipython~=8.23.0",
+    "psycopg~=3.1.18",
+    "uvicorn==0.30.3",
+    "pyyaml~=6.0.1",
+    "openpyxl~=3.1.5",
+]
