@@ -22,7 +22,7 @@ class WeatherReport:
     def from_json_response(cls, json_data: dict[str, Any]):
         """Create a WeatherReport instance from OpenWeatherMap API response."""
 
-        if (is_valid := cls.is_valid(json_data)) and not is_valid:
+        if not (is_valid := cls.is_valid(json_data)):
             raise InvalidResponse('Response got from source is not valid.')
 
         # Extract individual dictionaries and handle potential null values
