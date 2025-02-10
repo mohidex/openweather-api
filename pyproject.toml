@@ -5,7 +5,7 @@ description = "The Weather API provides weather reports for any country in three
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "aiohttp~=3.9.5",
+    "aiohttp~=3.11.12",
     "django-redis~=5.4.0",
     "django==5.1.5",
     "ipython~=8.32.0",
