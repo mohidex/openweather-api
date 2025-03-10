@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "aiohttp~=3.11.13",
     "django-redis~=5.4.0",
-    "django==5.1.6",
+    "django==5.1.7",
     "ipython~=8.33.0",
     "psycopg~=3.2.3",
     "uvicorn==0.30.3",
